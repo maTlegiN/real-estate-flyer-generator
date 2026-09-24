@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>地產宣傳單張生成器 - 美聯工商風格</title>
+    <title>宣傳單張生成器</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Noto Sans TC for Hong Kong Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+
     <script>
         tailwind.config = {
             theme: {
@@ -133,6 +135,7 @@
         }
     </style>
 </head>
+
 <body class="min-h-screen text-gray-900 pb-12">
 
     <!-- Top Interactive Toolbar (Non-printable) -->
@@ -142,34 +145,40 @@
                 <div class="bg-amber-400 text-slate-900 font-extrabold text-xl px-2.5 py-1 rounded">
                     美聯工商
                 </div>
-                <h1 class="text-lg font-bold tracking-wide">A4地產單張製作工具</h1>
+                <h1 class="text-lg font-bold tracking-wide">A4尺寸單張製作工具</h1>
             </div>
 
             <!-- Action Controls -->
             <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-sm">
-                <button onclick="addProperty('sale')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition shadow-sm">
+                <button onclick="addProperty('sale')"
+                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition shadow-sm">
                     <i class="fa-solid fa-plus"></i> 新增「買賣」
                 </button>
-                <button onclick="addProperty('rent')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition shadow-sm">
+                <button onclick="addProperty('rent')"
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition shadow-sm">
                     <i class="fa-solid fa-plus"></i> 新增「租務」
                 </button>
-                <button onclick="resetData()" class="bg-slate-700 hover:bg-slate-600 text-gray-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                <button onclick="resetData()"
+                    class="bg-slate-700 hover:bg-slate-600 text-gray-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-rotate-left"></i> 重設範本
                 </button>
-                <button onclick="clearAll()" class="bg-slate-700 hover:bg-red-900 text-red-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                <button onclick="clearAll()"
+                    class="bg-slate-700 hover:bg-red-900 text-red-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-trash-can"></i> 清空
                 </button>
                 <div class="h-5 w-px bg-slate-700 mx-1"></div>
-                <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg flex items-center gap-2 shadow-md transition transform hover:scale-105">
-                    <i class="fa-solid fa-print"></i> 列印 / 另存 PDF (A4)
+                <button onclick="window.print()"
+                    class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg flex items-center gap-2 shadow-md transition transform hover:scale-105">
+                    <i class="fa-solid fa-print"></i> 列印 / 另存 PDF (A4尺寸)
                 </button>
             </div>
         </div>
     </header>
 
-    <div class="no-print max-w-4xl mx-auto mb-4 px-4 text-xs text-slate-600 bg-amber-50 border border-amber-200 p-2.5 rounded-lg flex items-center gap-2">
+    <div
+        class="no-print max-w-4xl mx-auto mb-4 px-4 text-xs text-slate-600 bg-amber-50 border border-amber-200 p-2.5 rounded-lg flex items-center gap-2">
         <i class="fa-solid fa-circle-info text-amber-600 text-base"></i>
-        <span>提示：所有文字皆可<strong>直接點擊編輯</strong>。滑鼠移至卡片上可切換「買賣/租務」或刪除卡片。為確保 A4 排版完美，建議保留約 16–20 個盤源。</span>
+        <span>提示：所有文字皆可<strong>直接點擊編輯</strong>。為確保 A4 排版完美，建議保留約 <strong>20-24</strong> 個盤源。</span>
     </div>
 
     <!-- Main A4 Printable Document -->
@@ -199,7 +208,8 @@
         <!-- Footer Section -->
         <footer class="mt-2 pt-1 border-t-2 border-gray-300">
             <!-- Branch Contact Banner -->
-            <div class="bg-midland-navy text-amber-400 font-extrabold flex items-center justify-between px-4 py-1 rounded-t shadow-inner mb-1">
+            <div
+                class="bg-midland-navy text-amber-400 font-extrabold flex items-center justify-between px-4 py-1 rounded-t shadow-inner mb-1">
                 <div class="text-xl tracking-wider flex items-center gap-2">
                     <span contenteditable="true" id="branchName" class="focus:bg-slate-800 px-1">東九龍分行 (2)</span>
                 </div>
@@ -214,19 +224,22 @@
                 <!-- Midland Industrial Logo Block -->
                 <div class="flex items-center gap-2">
                     <div class="flex items-baseline font-black leading-none text-amber-500 text-2xl">
-                        <div class="bg-amber-500 text-black px-1.5 py-0.5 rounded-sm font-extrabold text-lg mr-1 tracking-tighter">
-                            mI
+                        <div
+                            class="bg-amber-500 text-black px-1.5 py-0.5 rounded-sm font-extrabold text-lg mr-1 tracking-tighter">
+                            M
                         </div>
                         <div class="flex flex-col">
                             <span class="text-amber-500 text-base font-black tracking-tighter leading-none">美聯工商</span>
-                            <span class="text-[8px] text-gray-600 font-semibold tracking-tighter uppercase">Midland Industrial</span>
+                            <span class="text-[8px] text-gray-600 font-semibold tracking-tighter uppercase">
+                                Midland IC&I</span>
                         </div>
                     </div>
-                    
+
                     <div class="border-l border-gray-400 h-6 mx-1"></div>
 
                     <!-- Search Bar Graphic -->
-                    <div class="border border-amber-500 rounded px-1.5 py-0.5 flex items-center gap-1 bg-white text-[10px]">
+                    <div
+                        class="border border-amber-500 rounded px-1.5 py-0.5 flex items-center gap-1 bg-white text-[10px]">
                         <span contenteditable="true" class="font-bold text-gray-800">美聯工商</span>
                         <i class="fa-solid fa-magnifying-glass text-amber-500"></i>
                     </div>
@@ -238,14 +251,17 @@
                         www.midlandici.com.hk
                     </div>
                     <div class="text-[8px] text-gray-500" contenteditable="true">
-                        香港聯交所上市公司 (459) 成員
+                        鋑聯控股有限公司成員
                     </div>
                 </div>
 
                 <!-- Disclaimer Text -->
                 <div class="text-[7px] leading-tight text-gray-500 max-w-[280mm] text-right">
-                    <div>上述樓面面積(標示「*」者除外)未經核實。請掃描右方二維碼或瀏覽網頁(http://459.hk/dI)以閱覽免責聲明。</div>
-                    <div>廣告日期：<span contenteditable="true" id="adDate">14/03/2026</span></div>
+                    <div>
+                        上述樓面面積(標示「*」者除外)未經核實。請瀏覽網頁(http://459.hk/di)以閱覽免責聲明。<br>
+                        藉著閱覽本文件內所載的資料及素材，閣下已無條件同意免責聲明的條款及條件。
+                    </div>
+                    <div>廣告日期：<span contenteditable="true" id="adDate">01/01/2026</span></div>
                 </div>
             </div>
         </footer>
@@ -280,7 +296,7 @@
 
             // Row 5
             { type: 'sale', district: '油塘', building: '華順工業大廈', area: '約 3,300 - 10,100平方呎', bullets: ['變遷在即', '鄰近大型建設'], price: '售@3,600', refId: '物業編號 : I-00259536' },
-            { type: 'sale', district: '英皇道工廈', building: '英皇道工廈', area: '約 4,500 平方呎', bullets: ['罕有全層交吉出售', '鄰近鰂魚涌港鐵站'], price: '售@5,556', refId: '物業編號 : I-00052661' },
+            { type: 'sale', district: '英皇道', building: '英皇道工廈', area: '約 4,500 平方呎', bullets: ['罕有全層交吉出售', '鄰近鰂魚涌港鐵站'], price: '售@5,556', refId: '物業編號 : I-00052661' },
             { type: 'rent', district: '土瓜灣', building: '葦一電磁大廈', area: '約 10,354 平方呎', bullets: ['罕有大樓面及大電'], price: '租@10 全包', refId: '物業編號 : I-00088145' },
             { type: 'rent', district: '鰂魚涌', building: '東港中心', area: '約 18,846 平方呎', bullets: ['獨立全層 特高樓底'], price: '租@20', refId: '物業編號 : I-00080715' },
         ];
@@ -300,13 +316,13 @@
                 card.className = `card-container border-r-2 border-b-2 ${themeBorder} p-1.5 flex flex-col justify-between text-center relative bg-white hover:bg-slate-50/50 transition`;
 
                 // Handle bullets HTML
-                const bulletsHtml = item.bullets && item.bullets.length > 0 
-                    ? item.bullets.map(b => `<div contenteditable="true" class="leading-tight">${b}</div>`).join('') 
+                const bulletsHtml = item.bullets && item.bullets.length > 0
+                    ? item.bullets.map(b => `<div contenteditable="true" class="leading-tight">${b}</div>`).join('')
                     : '<div contenteditable="true" class="leading-tight">寫裝即用</div>';
 
                 // Handle Sub price if exists
-                const priceSubHtml = item.priceSub 
-                    ? `<span contenteditable="true" class="text-sm font-bold ml-1.5 ${isSale ? 'text-emerald-700' : 'text-red-600'}">${item.priceSub}</span>` 
+                const priceSubHtml = item.priceSub
+                    ? `<span contenteditable="true" class="text-sm font-bold ml-1.5 ${isSale ? 'text-emerald-700' : 'text-red-600'}">${item.priceSub}</span>`
                     : '';
 
                 card.innerHTML = `
@@ -369,12 +385,12 @@
         function addProperty(type) {
             const newCard = {
                 type: type,
-                district: type === 'sale' ? '觀塘' : '九龍灣',
-                building: '新進工業大廈',
-                area: '約 3,000 平方呎',
+                district: '[地區名稱]',
+                building: '[建築物名稱]',
+                area: '約 [XXX] 平方呎',
                 bullets: ['高層開揚', '交通便利'],
-                price: type === 'sale' ? '售@4,500' : '租@15 全包',
-                refId: '物業編號 : I-000' + Math.floor(10000 + Math.random() * 90000)
+                price: type === 'sale' ? '售@[XXX]' : '租@[XXX]',
+                refId: '物業編號 : I-XXXXXXXX'
             };
             propertyData.push(newCard);
             renderProperties();
@@ -390,7 +406,7 @@
         function resetData() {
             propertyData = JSON.parse(JSON.stringify(defaultProperties));
             renderProperties();
-            
+
             // Set current date
             const today = new Date();
             const dateStr = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
@@ -398,9 +414,10 @@
         }
 
         // Initialize App on window load
-        window.onload = function() {
+        window.onload = function () {
             resetData();
         };
     </script>
 </body>
+
 </html>
