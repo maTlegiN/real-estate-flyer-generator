@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地產宣傳單張生成器 - 美聯工商風格</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Noto Sans TC for Hong Kong Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        midland: {
+                            yellow: '#f8ac00',
+                            darkyellow: '#e09800',
+                            red: '#cc0000',
+                            green: '#007a3d',
+                            navy: '#002060',
+                            bg: '#fffbee',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        /* Standard A4 dimensions in portrait */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            height: 297mm;
+            padding: 5mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        /* Printable Color Adjustment Force */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        /* Editable content hover feedback */
+        [contenteditable="true"] {
+            outline: 1px dashed transparent;
+            transition: all 0.2s ease;
+            border-radius: 2px;
+        }
+
+        [contenteditable="true"]:hover {
+            outline: 1px dashed #3b82f6;
+            background-color: rgba(239, 246, 255, 0.5);
+        }
+
+        [contenteditable="true"]:focus {
+            outline: 2px solid #2563eb;
+            background-color: #ffffff;
+        }
+
+        /* Card Controls Overlay */
+        .card-container {
+            position: relative;
+        }
+
+        .card-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .card-container:hover .card-actions {
+            opacity: 1;
+        }
+
+        /* PRINT STYLES - A4 Strict Enforcement */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            body {
+                background: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .a4-page {
+                width: 210mm !important;
+                height: 297mm !important;
+                max-height: 297mm !important;
+                padding: 4mm 5mm !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+
+            .card-actions {
+                display: none !important;
+            }
+
+            [contenteditable="true"] {
+                outline: none !important;
+                background-color: transparent !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-900 pb-12">
+
+    <!-- Top Interactive Toolbar (Non-printable) -->
+    <header class="no-print bg-slate-900 text-white sticky top-0 z-50 shadow-md mb-6 py-3 px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-400 text-slate-900 font-extrabold text-xl px-2.5 py-1 rounded">
+                    美聯工商
+                </div>
+                <h1 class="text-lg font-bold tracking-wide">A4地產單張製作工具</h1>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-sm">
+                <button onclick="addProperty('sale')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition shadow-sm">
+                    <i class="fa-solid fa-plus"></i> 新增「買賣」
+                </button>
+                <button onclick="addProperty('rent')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition shadow-sm">
+                    <i class="fa-solid fa-plus"></i> 新增「租務」
+                </button>
+                <button onclick="resetData()" class="bg-slate-700 hover:bg-slate-600 text-gray-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-rotate-left"></i> 重設範本
+                </button>
+                <button onclick="clearAll()" class="bg-slate-700 hover:bg-red-900 text-red-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-trash-can"></i> 清空
+                </button>
+                <div class="h-5 w-px bg-slate-700 mx-1"></div>
+                <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg flex items-center gap-2 shadow-md transition transform hover:scale-105">
+                    <i class="fa-solid fa-print"></i> 列印 / 另存 PDF (A4)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="no-print max-w-4xl mx-auto mb-4 px-4 text-xs text-slate-600 bg-amber-50 border border-amber-200 p-2.5 rounded-lg flex items-center gap-2">
+        <i class="fa-solid fa-circle-info text-amber-600 text-base"></i>
+        <span>提示：所有文字皆可<strong>直接點擊編輯</strong>。滑鼠移至卡片上可切換「買賣/租務」或刪除卡片。為確保 A4 排版完美，建議保留約 16–20 個盤源。</span>
+    </div>
+
+    <!-- Main A4 Printable Document -->
+    <main class="a4-page shadow-2xl rounded-sm" id="flyerDocument">
+
+        <!-- Header Section: Split Banners -->
+        <header class="grid grid-cols-2 gap-2 mb-2">
+            <!-- Sales Banner Left -->
+            <div class="bg-amber-200/60 border-y-2 border-red-600 py-1 text-center relative overflow-hidden">
+                <h2 class="text-2xl font-black text-red-600 tracking-widest drop-shadow-sm font-sans">
+                    買 賣 精 選
+                </h2>
+            </div>
+            <!-- Rental Banner Right -->
+            <div class="bg-amber-200/60 border-y-2 border-emerald-700 py-1 text-center relative overflow-hidden">
+                <h2 class="text-2xl font-black text-emerald-800 tracking-widest drop-shadow-sm font-sans">
+                    租 務 精 選
+                </h2>
+            </div>
+        </header>
+
+        <!-- Property Grid Container (4 columns x N rows) -->
+        <div id="propertyGrid" class="grid grid-cols-4 gap-1.5 flex-1 content-start">
+            <!-- Dynamic Content will be injected here via JavaScript -->
+        </div>
+
+        <!-- Footer Section -->
+        <footer class="mt-2 pt-1 border-t-2 border-gray-300">
+            <!-- Branch Contact Banner -->
+            <div class="bg-midland-navy text-amber-400 font-extrabold flex items-center justify-between px-4 py-1 rounded-t shadow-inner mb-1">
+                <div class="text-xl tracking-wider flex items-center gap-2">
+                    <span contenteditable="true" id="branchName" class="focus:bg-slate-800 px-1">東九龍分行 (2)</span>
+                </div>
+                <div class="text-3xl font-black tracking-widest text-white flex items-center gap-1">
+                    <i class="fa-solid fa-phone text-amber-400 text-xl"></i>
+                    <span contenteditable="true" id="branchPhone" class="focus:bg-slate-800 px-1">2927 4567</span>
+                </div>
+            </div>
+
+            <!-- Midland Logo & Disclaimer Footer Bar -->
+            <div class="flex items-center justify-between text-[9px] text-gray-700 px-1 pt-0.5">
+                <!-- Midland Industrial Logo Block -->
+                <div class="flex items-center gap-2">
+                    <div class="flex items-baseline font-black leading-none text-amber-500 text-2xl">
+                        <div class="bg-amber-500 text-black px-1.5 py-0.5 rounded-sm font-extrabold text-lg mr-1 tracking-tighter">
+                            mI
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-amber-500 text-base font-black tracking-tighter leading-none">美聯工商</span>
+                            <span class="text-[8px] text-gray-600 font-semibold tracking-tighter uppercase">Midland Industrial</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-l border-gray-400 h-6 mx-1"></div>
+
+                    <!-- Search Bar Graphic -->
+                    <div class="border border-amber-500 rounded px-1.5 py-0.5 flex items-center gap-1 bg-white text-[10px]">
+                        <span contenteditable="true" class="font-bold text-gray-800">美聯工商</span>
+                        <i class="fa-solid fa-magnifying-glass text-amber-500"></i>
+                    </div>
+                </div>
+
+                <!-- Web Address -->
+                <div class="text-center">
+                    <div class="text-xs font-bold text-gray-900 tracking-tight" contenteditable="true">
+                        www.midlandici.com.hk
+                    </div>
+                    <div class="text-[8px] text-gray-500" contenteditable="true">
+                        香港聯交所上市公司 (459) 成員
+                    </div>
+                </div>
+
+                <!-- Disclaimer Text -->
+                <div class="text-[7px] leading-tight text-gray-500 max-w-[280mm] text-right">
+                    <div>上述樓面面積(標示「*」者除外)未經核實。請掃描右方二維碼或瀏覽網頁(http://459.hk/dI)以閱覽免責聲明。</div>
+                    <div>廣告日期：<span contenteditable="true" id="adDate">14/03/2026</span></div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        // Default Template Property Data initialized based on reference image
+        const defaultProperties = [
+            // Row 1
+            { type: 'sale', district: '觀塘', building: '開聯工業大廈', area: '約 2,363 平方呎', bullets: ['寫裝交吉', '單邊開揚'], price: '售@4,867', refId: '物業編號 : I-00021371' },
+            { type: 'sale', district: '觀塘', building: '觀塘工業中心', area: '約 2,573 平方呎', bullets: ['毗鄰港鐵站', '交吉即用'], price: '售@3,800', refId: '物業編號 : I-00013907' },
+            { type: 'rent', district: '觀塘', building: '國際工業大廈', area: '約 15,000 平方呎', bullets: ['罕有大樓面', '海濱道觀倉'], price: '租@10 全包', refId: '物業編號 : I-00079101' },
+            { type: 'rent', district: '觀塘', building: '觀塘工業中心', area: '約 2,954 平方呎', bullets: ['四正有內廁', '大型停車場'], price: '租@13 全包', refId: '物業編號 : I-00127825' },
+
+            // Row 2
+            { type: 'sale', district: '觀塘', building: '日昇中心', area: '約 11,265 平方呎', bullets: ['一線街工廈', '大車場可入櫃'], price: '售@4,882', refId: '物業編號 : I-00018522' },
+            { type: 'sale', district: '觀塘', building: '駱駝漆大廈3期', area: '約 3,413 平方呎', bullets: ['知名工廈', '人流特旺'], price: '售@7,500', priceSub: '租@24.9', refId: '物業編號 : I-00018297' },
+            { type: 'rent', district: '觀塘', building: '瀝洋 (商廈)', area: '約 7,285 平方呎', bullets: ['特長免租期', '另有裝修津貼'], price: '租@16', refId: '物業編號 : I-00028534' },
+            { type: 'rent', district: '觀塘', building: '航天科技中心', area: '全層 約10,589平方呎', bullets: ['工商綜合大樓', '靚裝即用海景'], price: '租@17', priceSub: '售@5,500', refId: '物業編號 : I-00087643' },
+
+            // Row 3
+            { type: 'sale', district: '九龍灣', building: '寶隆中心', area: '約 4,028 平方呎', bullets: ['寫裝交吉', '單邊開揚'], price: '售@4,400', refId: '物業編號 : I-00020315' },
+            { type: 'sale', district: '九龍灣', building: '企業廣場1期', area: '約 4,068 平方呎', bullets: ['投資首選', '歡迎還價'], price: '售@6,514', refId: '物業編號 : I-00044902' },
+            { type: 'rent', district: '九龍灣', building: '企業廣場3期', area: '約 4,560 平方呎', bullets: ['百萬寫裝', '即租即用'], price: '租@17', refId: '物業編號 : I-00016533' },
+            { type: 'rent', district: '九龍灣', building: '開達大廈', area: '約 17,090 平方呎', bullets: ['罕有大樓面', '高層開揚'], price: '租@14', refId: '物業編號 : I-00317752' },
+
+            // Row 4
+            { type: 'sale', district: '新蒲崗', building: '永顯工業大廈', area: '約 2,880 平方呎', bullets: ['連平台約1,000平方呎', '鑽石山鐵路站', '交通方便四通八達'], price: '售$1,230萬', refId: '物業編號 : I-00017925' },
+            { type: 'sale', district: '新蒲崗', building: '旺景工廈', area: '約 3,737 平方呎', bullets: ['單邊L窗', '光猛開揚'], price: '售@3,451', refId: '物業編號 : I-00011045' },
+            { type: 'rent', district: '油塘', building: '華輝工廈', area: '約 3,000 平方呎', bullets: ['四正實用', '車場貨台可入櫃'], price: '租@10.67 全包', refId: '物業編號 : I-00067543' },
+            { type: 'rent', district: '新蒲崗', building: '天虹紡織製衣', area: '約10,000 - 20,000平方呎', bullets: ['獨立全層', '鄰近屯馬港鐵站'], price: '租@12 全包', refId: '物業編號 : I-00148087' },
+
+            // Row 5
+            { type: 'sale', district: '油塘', building: '華順工業大廈', area: '約 3,300 - 10,100平方呎', bullets: ['變遷在即', '鄰近大型建設'], price: '售@3,600', refId: '物業編號 : I-00259536' },
+            { type: 'sale', district: '英皇道工廈', building: '英皇道工廈', area: '約 4,500 平方呎', bullets: ['罕有全層交吉出售', '鄰近鰂魚涌港鐵站'], price: '售@5,556', refId: '物業編號 : I-00052661' },
+            { type: 'rent', district: '土瓜灣', building: '葦一電磁大廈', area: '約 10,354 平方呎', bullets: ['罕有大樓面及大電'], price: '租@10 全包', refId: '物業編號 : I-00088145' },
+            { type: 'rent', district: '鰂魚涌', building: '東港中心', area: '約 18,846 平方呎', bullets: ['獨立全層 特高樓底'], price: '租@20', refId: '物業編號 : I-00080715' },
+        ];
+
+        let propertyData = [];
+
+        function renderProperties() {
+            const grid = document.getElementById('propertyGrid');
+            grid.innerHTML = '';
+
+            propertyData.forEach((item, index) => {
+                const isSale = item.type === 'sale';
+                const themeBorder = isSale ? 'border-red-600' : 'border-emerald-700';
+                const themePriceColor = isSale ? 'text-red-600' : 'text-emerald-700';
+
+                const card = document.createElement('div');
+                card.className = `card-container border-r-2 border-b-2 ${themeBorder} p-1.5 flex flex-col justify-between text-center relative bg-white hover:bg-slate-50/50 transition`;
+
+                // Handle bullets HTML
+                const bulletsHtml = item.bullets && item.bullets.length > 0 
+                    ? item.bullets.map(b => `<div contenteditable="true" class="leading-tight">${b}</div>`).join('') 
+                    : '<div contenteditable="true" class="leading-tight">寫裝即用</div>';
+
+                // Handle Sub price if exists
+                const priceSubHtml = item.priceSub 
+                    ? `<span contenteditable="true" class="text-sm font-bold ml-1.5 ${isSale ? 'text-emerald-700' : 'text-red-600'}">${item.priceSub}</span>` 
+                    : '';
+
+                card.innerHTML = `
+                    <!-- Card Action Hover Overlay -->
+                    <div class="card-actions no-print absolute top-0 right-0 bg-slate-800/90 rounded-bl px-1.5 py-0.5 flex gap-1 z-20 text-[10px]">
+                        <button onclick="toggleType(${index})" title="切換 買賣/租務" class="text-amber-400 hover:text-white">
+                            <i class="fa-solid fa-arrows-rotate"></i> ${isSale ? '轉租務' : '轉買賣'}
+                        </button>
+                        <button onclick="removeProperty(${index})" title="刪除" class="text-red-400 hover:text-red-200 ml-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+
+                    <!-- Card Header: District & Building -->
+                    <div>
+                        <div contenteditable="true" class="text-base font-black text-gray-900 tracking-wide leading-snug">
+                            ${item.district || '地區'}
+                        </div>
+                        <div contenteditable="true" class="text-base font-black text-indigo-950 tracking-tight leading-none mb-0.5">
+                            ${item.building || '大廈名稱'}
+                        </div>
+                        <div contenteditable="true" class="text-[11px] font-semibold text-gray-700 leading-tight">
+                            ${item.area || '面積'}
+                        </div>
+                    </div>
+
+                    <!-- Bullet Points Features -->
+                    <div class="my-1 text-[11px] font-medium text-gray-800 space-y-0.5">
+                        ${bulletsHtml}
+                    </div>
+
+                    <!-- Price & Ref Footer -->
+                    <div class="mt-auto">
+                        <div class="leading-none py-0.5">
+                            <span contenteditable="true" class="text-lg font-black ${themePriceColor} tracking-tight">
+                                ${item.price || '意向價'}
+                            </span>
+                            ${priceSubHtml}
+                        </div>
+                        <div contenteditable="true" class="text-[8px] text-gray-500 font-mono tracking-tighter scale-90">
+                            ${item.refId || '物業編號 : I-00000000'}
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleType(index) {
+            propertyData[index].type = propertyData[index].type === 'sale' ? 'rent' : 'sale';
+            renderProperties();
+        }
+
+        function removeProperty(index) {
+            propertyData.splice(index, 1);
+            renderProperties();
+        }
+
+        function addProperty(type) {
+            const newCard = {
+                type: type,
+                district: type === 'sale' ? '觀塘' : '九龍灣',
+                building: '新進工業大廈',
+                area: '約 3,000 平方呎',
+                bullets: ['高層開揚', '交通便利'],
+                price: type === 'sale' ? '售@4,500' : '租@15 全包',
+                refId: '物業編號 : I-000' + Math.floor(10000 + Math.random() * 90000)
+            };
+            propertyData.push(newCard);
+            renderProperties();
+        }
+
+        function clearAll() {
+            if (confirm('確定要清空所有盤源嗎？')) {
+                propertyData = [];
+                renderProperties();
+            }
+        }
+
+        function resetData() {
+            propertyData = JSON.parse(JSON.stringify(defaultProperties));
+            renderProperties();
+            
+            // Set current date
+            const today = new Date();
+            const dateStr = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
+            document.getElementById('adDate').innerText = dateStr;
+        }
+
+        // Initialize App on window load
+        window.onload = function() {
+            resetData();
+        };
+    </script>
+</body>
+</html>
